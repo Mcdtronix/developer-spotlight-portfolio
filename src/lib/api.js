@@ -1,4 +1,4 @@
-const BASE_URL = '/api';
+const BASE_URL = 'http://localhost:8000/api';
 
 async function fetchAPI(endpoint) {
   try {

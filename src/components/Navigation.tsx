@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
-export const Navigation = () => {
+export interface NavItem {
+  name: string;
+  href: string;
+}
+export interface NavigationProps {
+  brand: string;
+  nav_items: NavItem[];
+  resume_url: string;
+}
+
+export function Navigation({ brand, nav_items, resume_url }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -10,17 +20,9 @@ export const Navigation = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const navItems = [
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Contact', href: '#contact' },
-  ];
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -29,12 +31,10 @@ export const Navigation = () => {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <a href="#" className="text-xl font-bold text-foreground">
-            Alex Morgan
+            {brand}
           </a>
-
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {nav_items.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
@@ -43,12 +43,10 @@ export const Navigation = () => {
                 {item.name}
               </a>
             ))}
-            <Button variant="outline" size="sm">
-              Resume
+            <Button variant="outline" size="sm" asChild>
+              <a href={resume_url} target="_blank" rel="noopener noreferrer">Resume</a>
             </Button>
           </div>
-
-          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="sm"
@@ -58,12 +56,10 @@ export const Navigation = () => {
             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
-
-        {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-background border-t border-border">
             <div className="py-4 space-y-3">
-              {navItems.map((item) => (
+              {nav_items.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
@@ -74,8 +70,8 @@ export const Navigation = () => {
                 </a>
               ))}
               <div className="px-4 pt-2">
-                <Button variant="outline" size="sm" className="w-full">
-                  Resume
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <a href={resume_url} target="_blank" rel="noopener noreferrer">Resume</a>
                 </Button>
               </div>
             </div>
@@ -84,4 +80,4 @@ export const Navigation = () => {
       </div>
     </nav>
   );
-};
+}
