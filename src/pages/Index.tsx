@@ -64,7 +64,7 @@ const Index = () => {
       <footer className="bg-muted/30 py-8 text-center">
         <div className="container mx-auto px-6">
           <p className="text-muted-foreground">
-            © 2024 Alex Morgan. Built with React, TypeScript & Tailwind CSS.
+            © 2024 Gudo macdonald. Built with Django, React, TypeScript & Tailwind CSS.
           </p>
         </div>
       </footer>
