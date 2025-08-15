@@ -80,11 +80,17 @@ WSGI_APPLICATION = 'Core.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "Mcdonald$default",
+        "USER": "Mcdonald",
+        "PASSWORD": "aqi16@khayz",
+        "HOST": "Mcdonald.mysql.pythonanywhere-services.com",
+        "PORT": "3306",
+        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
+
 
 
 # Password validation
