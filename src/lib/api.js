@@ -1,5 +1,6 @@
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://mcdonald.pythonanywhere.com/api';
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://mcdonald.pythonanywhere.com/api";
 
 async function fetchAPI(endpoint) {
   try {
@@ -13,25 +14,25 @@ async function fetchAPI(endpoint) {
 }
 
 export async function getAbout() {
-  return fetchAPI('about');
+  return fetchAPI("about");
 }
 
 export async function getContact() {
-  return fetchAPI('contact');
+  return fetchAPI("contact");
 }
 
 export async function getHero() {
-  return fetchAPI('hero');
+  return fetchAPI("hero");
 }
 
 export async function getNavigation() {
-  return fetchAPI('navigation');
+  return fetchAPI("navigation");
 }
 
 export async function getProjects() {
-  return fetchAPI('projects');
+  return fetchAPI("projects");
 }
 
 export async function getSkills() {
-  return fetchAPI('skills');
-} 
+  return fetchAPI("skills");
+}

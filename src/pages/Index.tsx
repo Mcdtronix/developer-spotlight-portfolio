@@ -5,7 +5,14 @@ import { About, AboutProps } from "@/components/About";
 import { Skills, SkillsProps } from "@/components/Skills";
 import { Projects, ProjectsProps } from "@/components/Projects";
 import { Contact, ContactProps } from "@/components/Contact";
-import { getAbout, getContact, getHero, getNavigation, getProjects, getSkills } from "@/lib/api";
+import {
+  getAbout,
+  getContact,
+  getHero,
+  getNavigation,
+  getProjects,
+  getSkills,
+} from "@/lib/api";
 
 const Index = () => {
   const [about, setAbout] = useState<AboutProps | null>(null);
@@ -18,7 +25,14 @@ const Index = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const [aboutData, contactData, heroData, navigationData, projectsData, skillsData] = await Promise.all([
+      const [
+        aboutData,
+        contactData,
+        heroData,
+        navigationData,
+        projectsData,
+        skillsData,
+      ] = await Promise.all([
         getAbout(),
         getContact(),
         getHero(),
@@ -26,12 +40,34 @@ const Index = () => {
         getProjects(),
         getSkills(),
       ]);
-      setAbout(Array.isArray(aboutData) ? aboutData[0] : aboutData?.results?.[0] || null);
-      setContact(Array.isArray(contactData) ? contactData[0] : contactData?.results?.[0] || null);
-      setHero(Array.isArray(heroData) ? heroData[0] : heroData?.results?.[0] || null);
-      setNavigation(Array.isArray(navigationData) ? navigationData[0] : navigationData?.results?.[0] || null);
-      setProjects(Array.isArray(projectsData) ? projectsData[0] : projectsData?.results?.[0] || null);
-      setSkills(Array.isArray(skillsData) ? skillsData[0] : skillsData?.results?.[0] || null);
+      setAbout(
+        Array.isArray(aboutData)
+          ? aboutData[0]
+          : aboutData?.results?.[0] || null
+      );
+      setContact(
+        Array.isArray(contactData)
+          ? contactData[0]
+          : contactData?.results?.[0] || null
+      );
+      setHero(
+        Array.isArray(heroData) ? heroData[0] : heroData?.results?.[0] || null
+      );
+      setNavigation(
+        Array.isArray(navigationData)
+          ? navigationData[0]
+          : navigationData?.results?.[0] || null
+      );
+      setProjects(
+        Array.isArray(projectsData)
+          ? projectsData[0]
+          : projectsData?.results?.[0] || null
+      );
+      setSkills(
+        Array.isArray(skillsData)
+          ? skillsData[0]
+          : skillsData?.results?.[0] || null
+      );
       setLoading(false);
     }
     fetchData();
@@ -46,13 +82,19 @@ const Index = () => {
   console.log("skills", skills);
   console.log("loading", loading);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
 
   // Show a user-friendly error if data is missing
   if (!about || !contact || !hero || !navigation || !projects || !skills) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-600">
-        Error: Failed to load all portfolio data. Please try refreshing the page or check back later.
+        Error: Failed to load all portfolio data. Please try refreshing the page
+        or check back later.
       </div>
     );
   }
@@ -68,7 +110,8 @@ const Index = () => {
       <footer className="bg-muted/30 py-8 text-center">
         <div className="container mx-auto px-6">
           <p className="text-muted-foreground">
-            © 2024 Gudo macdonald. Built with Django, React, TypeScript & Tailwind CSS.
+            © 2024 Gudo macdonald. Built with Django, React, TypeScript &
+            Tailwind CSS.
           </p>
         </div>
       </footer>
