@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+
+function scrollToSection(id: string) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth" });
+  }
+}
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
@@ -20,31 +27,57 @@ export function Navigation({ brand, nav_items, resume_url }: NavigationProps) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-    }`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-background/95 backdrop-blur-md shadow-lg"
+          : "bg-transparent"
+      }`}
+    >
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <a href="#" className="text-xl font-bold text-foreground">
             {brand}
           </a>
           <div className="hidden md:flex items-center space-x-8">
-            {nav_items.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-foreground/80 hover:text-primary transition-colors duration-200 font-medium"
-              >
-                {item.name}
-              </a>
-            ))}
+            {nav_items.map((item) => {
+              const isHash = item.href.startsWith("#");
+              return isHash ? (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(item.href.replace("#", ""));
+                  }}
+                  className="text-foreground/80 hover:text-primary transition-colors duration-200 font-medium cursor-pointer"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    outline: "none",
+                  }}
+                >
+                  {item.name}
+                </a>
+              ) : (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-foreground/80 hover:text-primary transition-colors duration-200 font-medium"
+                >
+                  {item.name}
+                </a>
+              );
+            })}
             <Button variant="outline" size="sm" asChild>
-              <a href={resume_url} target="_blank" rel="noopener noreferrer">Resume</a>
+              <a href={resume_url} target="_blank" rel="noopener noreferrer">
+                Resume
+              </a>
             </Button>
           </div>
           <Button
@@ -53,25 +86,56 @@ export function Navigation({ brand, nav_items, resume_url }: NavigationProps) {
             className="md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
         {isMobileMenuOpen && (
           <div className="md:hidden bg-background border-t border-border">
             <div className="py-4 space-y-3">
-              {nav_items.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="block px-4 py-2 text-foreground/80 hover:text-primary transition-colors duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </a>
-              ))}
+              {nav_items.map((item) => {
+                const isHash = item.href.startsWith("#");
+                return isHash ? (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection(item.href.replace("#", ""));
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block px-4 py-2 text-foreground/80 hover:text-primary transition-colors duration-200 cursor-pointer"
+                    style={{
+                      background: "none",
+                      border: "none",
+                      outline: "none",
+                    }}
+                  >
+                    {item.name}
+                  </a>
+                ) : (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="block px-4 py-2 text-foreground/80 hover:text-primary transition-colors duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                );
+              })}
               <div className="px-4 pt-2">
                 <Button variant="outline" size="sm" className="w-full" asChild>
-                  <a href={resume_url} target="_blank" rel="noopener noreferrer">Resume</a>
+                  <a
+                    href={resume_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Resume
+                  </a>
                 </Button>
               </div>
             </div>

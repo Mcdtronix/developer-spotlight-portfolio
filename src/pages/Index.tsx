@@ -74,13 +74,15 @@ const Index = () => {
   }, []);
 
   // Debug logging
+  /*
   console.log("about", about);
   console.log("contact", contact);
   console.log("hero", hero);
-  console.log("navigation", navigation);
+  console.log("navigation", navigation);  
   console.log("projects", projects);
   console.log("skills", skills);
   console.log("loading", loading);
+  */
 
   if (loading)
     return (
