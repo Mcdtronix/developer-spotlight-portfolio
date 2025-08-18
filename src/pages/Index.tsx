@@ -48,9 +48,13 @@ const Index = () => {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
-  // TEMP: Show raw data for debugging
+  // Show a user-friendly error if data is missing
   if (!about || !contact || !hero || !navigation || !projects || !skills) {
-    return <pre>{JSON.stringify({ about, contact, hero, navigation, projects, skills }, null, 2)}</pre>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        Error: Failed to load all portfolio data. Please try refreshing the page or check back later.
+      </div>
+    );
   }
 
   return (

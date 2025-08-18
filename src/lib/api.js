@@ -1,4 +1,5 @@
-const BASE_URL = 'http://Mcdonald.pythonanywhere.com/api';
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://mcdonald.pythonanywhere.com/api';
 
 async function fetchAPI(endpoint) {
   try {
