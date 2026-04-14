@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-o@x*aa0#b0_mt)0^p%%@x-onx1($5*$+yf(kfn@*a#5s7^n=*8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['194.162.143.0']
 
 
 # Application definition
@@ -79,15 +79,37 @@ WSGI_APPLICATION = 'Core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "Mcdonald$default",
+#         "USER": "Mcdonald",
+#         "PASSWORD": "aqi16@khayz",
+#         "HOST": "Mcdonald.mysql.pythonanywhere-services.com",
+#         "PORT": "3306",
+#         "OPTIONS": {"charset": "utf8mb4"},
+#     }
+# }
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "Mcdonald$default",
-        "USER": "Mcdonald",
+        "NAME": "portfolio_db",
+        "USER": "portfolio_user",
         "PASSWORD": "aqi16@khayz",
-        "HOST": "Mcdonald.mysql.pythonanywhere-services.com",
+        "HOST": "localhost",
         "PORT": "3306",
-        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
 
@@ -141,6 +163,7 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
