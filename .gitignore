@@ -68,6 +68,15 @@ ENV/
 .env
 .env.local
 
+# Safe to commit — no secrets
+!.env.development
+!.env.production
+
+# Never commit — has secrets
+.env
+.env.local
+Backend/.env
+
 # OS
 .DS_Store
 Thumbs.db

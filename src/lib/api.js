@@ -1,6 +1,6 @@
 const BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  "http://194.163.143.0/api";
+  "http://localhost:8000/api";
 
 async function fetchAPI(endpoint) {
   try {
