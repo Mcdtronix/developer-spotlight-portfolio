@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
 
 export interface HeroAction {
   label: string;
@@ -25,21 +24,12 @@ export interface HeroProps {
   social_links?: SocialLink[];
 }
 
-const iconMap = { ArrowDown, Github, Linkedin, Mail };
-
-// ── Carousel slides – each is a Tailwind-safe gradient combo ──
-const SLIDES = [
-  // Deep-space blue
-  "before:bg-[radial-gradient(ellipse_80%_60%_at_20%_40%,#1e3a8a,transparent_60%)] bg-[radial-gradient(ellipse_60%_80%_at_80%_60%,#0f172a,#0a0a0f)]",
-  // Ember / rose
-  "before:bg-[radial-gradient(circle_400px_at_75%_25%,rgba(251,146,60,0.18),transparent_65%)] bg-[radial-gradient(ellipse_90%_70%_at_60%_30%,#1a0533,#0a0a0f)]",
-  // Teal aurora
-  "before:bg-[radial-gradient(ellipse_70%_50%_at_30%_60%,rgba(20,184,166,0.22),transparent_70%)] bg-[radial-gradient(ellipse_100%_60%_at_50%_0%,#042f2e,#0a0a0f)]",
-  // Violet haze
-  "before:bg-[radial-gradient(circle_450px_at_15%_50%,rgba(139,92,246,0.22),transparent_70%)] bg-[radial-gradient(ellipse_80%_70%_at_80%_20%,#1e0545,#0a0a0f)]",
-];
-
-const INTERVAL = 4500;
+const iconMap = {
+  ArrowDown,
+  Github,
+  Linkedin,
+  Mail,
+};
 
 export function Hero({
   profile_image,
@@ -50,141 +40,114 @@ export function Hero({
   main_actions = [],
   social_links = [],
 }: HeroProps) {
-  const [current, setCurrent] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const heroRef = useRef<HTMLElement>(null);
 
-  const goTo = (n: number) => setCurrent((n + SLIDES.length) % SLIDES.length);
-
-  const startAuto = () => {
-    timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % SLIDES.length), INTERVAL);
-  };
-
+  // Parallax + fade on scroll
   useEffect(() => {
-    startAuto();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const heroHeight = hero.offsetHeight;
+      const progress = Math.min(scrollY / heroHeight, 1);
+
+      const inner = hero.querySelector<HTMLDivElement>(".hero-inner");
+      if (inner) {
+        inner.style.transform = `translateY(${scrollY * 0.35}px)`;
+        inner.style.opacity = `${1 - progress * 1.6}`;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleDot = (i: number) => {
-    goTo(i);
-    if (timerRef.current) clearInterval(timerRef.current);
-    startAuto();
-  };
-
-  // Split name for gradient accent on last word
-  const nameParts = name.trim().split(" ");
-  const firstName = nameParts.slice(0, -1).join(" ");
-  const lastName = nameParts.at(-1);
-
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0f]">
-
-      {/* ── Carousel background slides ── */}
-      <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden>
-        {SLIDES.map((cls, i) => (
-          <div
-            key={i}
-            className={cn(
-              "absolute inset-0 transition-opacity duration-[1200ms] ease-in-out before:absolute before:inset-0",
-              cls,
-              i === current ? "opacity-100" : "opacity-0"
-            )}
-          />
-        ))}
+    <section
+      ref={heroRef}
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0f]"
+    >
+      {/* ── Animated mesh background ── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="hero-orb hero-orb-1" />
+        <div className="hero-orb hero-orb-2" />
+        <div className="hero-orb hero-orb-3" />
+        {/* Fine grid */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
       </div>
 
-      {/* ── Dot grid ── */}
-      <div
-        className="absolute inset-0 z-[1] pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(rgba(255,255,255,0.065) 1px, transparent 1px)",
-          backgroundSize: "36px 36px",
-          maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
-        }}
-        aria-hidden/>
-
-      {/* ── Floating ambient orbs ── */}
-      <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden" aria-hidden>
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-blue-500/[0.07] blur-[100px] animate-[float_12s_ease-in-out_infinite]" />
-        <div className="absolute -bottom-16 -right-16 w-[380px] h-[380px] rounded-full bg-violet-500/[0.08] blur-[90px] animate-[float_12s_ease-in-out_infinite_-4s]" />
-        <div className="absolute top-1/2 left-1/2 w-[260px] h-[260px] rounded-full bg-teal-400/[0.06] blur-[80px] animate-[float_12s_ease-in-out_infinite_-8s]" />
-      </div>
-
-      {/* ── Hero content ── */}
-      <div className="relative z-10 container mx-auto px-6 text-center py-32">
-        <div className="max-w-3xl mx-auto">
-
-          {/* Availability badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-400/30 bg-blue-400/[0.08] backdrop-blur-sm text-[0.73rem] uppercase tracking-widest text-white/60 mb-8 animate-[fadeUp_0.7s_0.1s_both]">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            Open to opportunities
-          </div>
+      {/* ── Main content (parallax wrapper) ── */}
+      <div className="hero-inner relative z-10 container mx-auto px-6 text-center will-change-transform">
+        <div className="max-w-4xl mx-auto">
 
           {/* Avatar */}
-          <div className="relative w-28 h-28 mx-auto mb-8 animate-[fadeUp_0.8s_0.2s_cubic-bezier(0.34,1.56,0.64,1)_both]">
-            <div className="absolute inset-0 rounded-full border border-blue-400/35 animate-spin [animation-duration:8s]" />
-            <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-violet-600 shadow-[0_0_60px_rgba(96,165,250,0.35)] flex items-center justify-center overflow-hidden">
-              {profile_image ? (
-                <img src={profile_image} alt={name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-3xl font-bold text-white font-[Sora,sans-serif]">{initials}</span>
-              )}
-            </div>
+          <div className="hero-avatar w-32 h-32 mx-auto mb-8 rounded-full shadow-[0_0_60px_rgba(99,102,241,0.45)] flex items-center justify-center overflow-hidden ring-2 ring-indigo-500/30">
+            {profile_image ? (
+              <img
+                src={profile_image}
+                alt={name}
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <span className="text-4xl font-bold text-white">{initials}</span>
+            )}
           </div>
 
           {/* Name */}
-          <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.02] tracking-[-0.04em] text-white mb-5 animate-[fadeUp_0.7s_0.35s_both]">
-            {firstName && <span>{firstName} </span>}
-            <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-emerald-400 bg-clip-text text-transparent">
-              {lastName}
-            </span>
+          <h1 className="hero-name text-5xl md:text-7xl font-extrabold mb-4 tracking-tight text-white leading-none">
+            {name}
           </h1>
 
-          {/* Title */}
-          <p className="text-lg md:text-xl text-white/50 font-light tracking-wide mb-4 animate-[fadeUp_0.7s_0.45s_both]">
+          {/* Title chip */}
+          <p className="hero-title inline-block text-sm md:text-base font-semibold tracking-[0.2em] uppercase text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-5 py-2 mb-6">
             {title}
           </p>
 
           {/* Description */}
-          <p className="text-base md:text-lg text-white/35 max-w-xl mx-auto leading-relaxed mb-12 animate-[fadeUp_0.7s_0.55s_both]">
+          <p className="hero-desc text-base md:text-lg text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed">
             {description}
           </p>
 
-          {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-14 animate-[fadeUp_0.7s_0.65s_both]">
+          {/* CTAs */}
+          <div className="hero-ctas flex flex-col sm:flex-row gap-4 justify-center mb-16">
             {main_actions.map((action, i) => {
               const Icon = iconMap[action.icon as keyof typeof iconMap] || null;
-              return i === 0 ? (
+              return (
                 <Button
                   key={i}
                   size="lg"
-                  className="rounded-full px-8 py-6 text-base bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 border-0 shadow-[0_8px_30px_rgba(59,130,246,0.38)] hover:shadow-[0_14px_40px_rgba(59,130,246,0.55)] transition-all duration-300 hover:-translate-y-0.5">
+                  className={
+                    i === 0
+                      ? "text-base px-8 py-6 bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:shadow-[0_0_45px_rgba(99,102,241,0.6)] transition-all duration-300 rounded-full"
+                      : "text-base px-8 py-6 bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all duration-300 rounded-full"
+                  }
+                >
                   {action.label}
-                  {Icon && <Icon className="ml-2 h-4 w-4" />}
-                </Button>
-              ) : (
-                <Button
-                  key={i}
-                  size="lg"
-                  variant="ghost"
-                  className="rounded-full px-8 py-6 text-base border border-white/12 bg-white/[0.06] hover:bg-white/[0.11] hover:border-white/25 text-white/75 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5">
-                  {Icon && <Icon className="mr-2 h-4 w-4" />}
-                  {action.label}
+                  {Icon && <Icon className="ml-2 h-5 w-5" />}
                 </Button>
               );
             })}
           </div>
 
-          {/* Social icons */}
-          <div className="flex justify-center gap-3 animate-[fadeUp_0.7s_0.75s_both]">
+          {/* Socials */}
+          <div className="hero-socials flex justify-center space-x-4">
             {social_links.map((link, i) => {
               const Icon = iconMap[link.icon as keyof typeof iconMap] || null;
               return (
                 <a
                   key={i}
                   href={link.url}
-                  title={link.platform}
-                  className="w-11 h-11 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.06] text-white/55 hover:text-blue-400 hover:border-blue-400/40 hover:bg-blue-400/[0.12] transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-sm">
-                  {Icon && <Icon className="h-5 w-5" />}
+                  className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 transition-all duration-300 shadow hover:shadow-indigo-500/20 hover:shadow-lg"
+                >
+                  {Icon && <Icon className="h-5 w-5 text-white/70 hover:text-white" />}
                 </a>
               );
             })}
@@ -192,27 +155,120 @@ export function Hero({
         </div>
       </div>
 
-      {/* ── Slide indicators ── */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex gap-2.5" role="tablist" aria-label="Background slide">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            role="tab"
-            aria-selected={i === current}
-            onClick={() => handleDot(i)}
-            className={cn(
-              "h-[3px] rounded-full transition-all duration-500 cursor-pointer",
-              i === current ? "w-12 bg-blue-400" : "w-7 bg-white/25 hover:bg-white/45"
-            )}
-          />
-        ))}
+      {/* ── Scroll indicator ── */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 hero-scroll-indicator">
+        <span className="text-xs tracking-[0.2em] uppercase text-white/30">Scroll</span>
+        <div className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent animate-[scrollLine_1.8s_ease-in-out_infinite]" />
       </div>
 
-      {/* ── Subtle scroll cue ── */}
-      <div className="absolute bottom-12 right-12 hidden md:flex flex-col items-center gap-2 text-white/25 text-[0.65rem] uppercase tracking-widest" aria-hidden>
-        <span>scroll</span>
-        <div className="w-px h-10 bg-gradient-to-b from-transparent to-white/25 animate-[scrollLine_2s_ease-in-out_infinite]" />
+      {/* ── Wave SVG transition into About ── */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none overflow-hidden leading-[0]">
+        {/* Back wave — slower, lighter */}
+        <svg
+          viewBox="0 0 1440 120"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-[90px] md:h-[120px] hero-wave-back"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,60 C240,110 480,10 720,60 C960,110 1200,10 1440,60 L1440,120 L0,120 Z"
+            fill="rgba(255,255,255,0.04)"
+          />
+        </svg>
+        {/* Front wave — solid page bg colour */}
+        <svg
+          viewBox="0 0 1440 80"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute bottom-0 w-full h-[70px] md:h-[90px] hero-wave-front"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,40 C360,90 1080,0 1440,40 L1440,80 L0,80 Z"
+            fill="#f8fafc"
+          />
+        </svg>
       </div>
+
+      <style>{`
+        /* Orbs */
+        .hero-orb {
+          position: absolute;
+          border-radius: 9999px;
+          filter: blur(80px);
+          will-change: transform;
+        }
+        .hero-orb-1 {
+          width: 600px; height: 600px;
+          top: -150px; left: -150px;
+          background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+          animation: orbFloat 14s ease-in-out infinite;
+        }
+        .hero-orb-2 {
+          width: 500px; height: 500px;
+          bottom: 50px; right: -100px;
+          background: radial-gradient(circle, rgba(168,85,247,0.14) 0%, transparent 70%);
+          animation: orbFloat 18s ease-in-out infinite reverse;
+        }
+        .hero-orb-3 {
+          width: 400px; height: 400px;
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
+          background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+          animation: orbPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes orbFloat {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33%       { transform: translate(30px, -40px) scale(1.05); }
+          66%       { transform: translate(-20px, 20px) scale(0.97); }
+        }
+        @keyframes orbPulse {
+          0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+          50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        /* Avatar glow pulse */
+        .hero-avatar {
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          animation: avatarGlow 4s ease-in-out infinite;
+        }
+        @keyframes avatarGlow {
+          0%, 100% { box-shadow: 0 0 40px rgba(99,102,241,0.35); }
+          50%       { box-shadow: 0 0 80px rgba(139,92,246,0.55); }
+        }
+
+        /* Entrance stagger */
+        .hero-avatar     { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.1s both, avatarGlow 4s ease-in-out infinite; }
+        .hero-name       { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.25s both; }
+        .hero-title      { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.38s both; }
+        .hero-desc       { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.5s both; }
+        .hero-ctas       { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.62s both; }
+        .hero-socials    { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.74s both; }
+        .hero-scroll-indicator { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 1s both; }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(28px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scroll line pulse */
+        @keyframes scrollLine {
+          0%, 100% { opacity: 0.3; transform: scaleY(0.7); transform-origin: top; }
+          50%       { opacity: 1;   transform: scaleY(1);   transform-origin: top; }
+        }
+
+        /* Wave animations */
+        .hero-wave-back {
+          animation: waveSway 9s ease-in-out infinite;
+        }
+        .hero-wave-front {
+          animation: waveSway 6s ease-in-out infinite reverse;
+        }
+        @keyframes waveSway {
+          0%, 100% { transform: translateX(0); }
+          50%       { transform: translateX(-2%); }
+        }
+      `}</style>
     </section>
   );
 }
