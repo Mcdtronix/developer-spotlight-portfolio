@@ -102,19 +102,24 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0f]">
       <Navigation {...navigation} />
       <Hero {...hero} />
       <About {...about} />
       <Skills {...skills} />
       <Projects {...projects} />
       <Contact {...contact} />
-      <footer className="bg-muted/30 py-8 text-center">
-        <div className="container mx-auto px-6">
+      <footer className="relative py-12 overflow-hidden border-t border-white/5">
+        <div className="container mx-auto px-6 relative z-10 text-center">
           <p className="text-muted-foreground">
             © 2024 Gudo macdonald. Built with Django, React, TypeScript &
             Tailwind CSS.
           </p>
+          <div className="mt-4 flex justify-center gap-4 text-[0.65rem] uppercase tracking-widest text-white/10">
+            <span>Harare, Zimbabwe</span>
+            <span className="w-1 h-1 rounded-full bg-white/10 self-center" />
+            <span>Full-Stack Developer</span>
+          </div>
         </div>
       </footer>
     </div>
