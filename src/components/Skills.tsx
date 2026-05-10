@@ -275,15 +275,15 @@ export function Skills({
         ════════════════════════════════ */
         .skills-wave-back  { animation: skillsWaveSway 10s ease-in-out infinite; }
         .skills-wave-front { animation: skillsWaveSway 7s ease-in-out infinite reverse; }
-        .skills-bot-wave-back  { animation: skillsBotSway 11s ease-in-out infinite; }
-        .skills-bot-wave-front { animation: skillsBotSway 8s ease-in-out infinite reverse; }
+        .skills-bot-wave-back  { animation: waveSway 9s ease-in-out infinite; }
+        .skills-bot-wave-front { animation: waveSway 6s ease-in-out infinite reverse; }
         @keyframes skillsWaveSway {
           0%, 100% { transform: translateX(0); }
           50%       { transform: translateX(-1.5%); }
         }
-        @keyframes skillsBotSway {
+        @keyframes waveSway {
           0%, 100% { transform: translateX(0); }
-          50%       { transform: translateX(1.5%); }
+          50%       { transform: translateX(-2%); }
         }
 
         /* ════════════════════════════════
@@ -510,25 +510,27 @@ export function Skills({
 
       {/* ── Bottom wave: Skills (#0a0a0f) → Projects (#f1f5f9) ── */}
       <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none overflow-hidden leading-[0]">
+        {/* Back wave — slower, lighter */}
         <svg
-          viewBox="0 0 1440 110"
+          viewBox="0 0 1440 120"
           xmlns="http://www.w3.org/2000/svg"
-          className="absolute bottom-0 w-full h-[90px] md:h-[120px] skills-bot-wave-back"
+          className="w-full h-[90px] md:h-[120px] skills-bot-wave-back"
           preserveAspectRatio="none"
         >
           <path
-            d="M0,60 C360,110 1080,10 1440,60 L1440,110 L0,110 Z"
-            fill="rgba(99,102,241,0.07)"
+            d="M0,60 C240,110 480,10 720,60 C960,110 1200,10 1440,60 L1440,120 L0,120 Z"
+            fill="rgba(99,102,241,0.04)"
           />
         </svg>
+        {/* Front wave — solid page bg colour */}
         <svg
-          viewBox="0 0 1440 90"
+          viewBox="0 0 1440 80"
           xmlns="http://www.w3.org/2000/svg"
-          className="absolute bottom-0 w-full h-[70px] md:h-[95px] skills-bot-wave-front"
+          className="absolute bottom-0 w-full h-[70px] md:h-[90px] skills-bot-wave-front"
           preserveAspectRatio="none"
         >
           <path
-            d="M0,45 C480,95 960,5 1440,50 L1440,90 L0,90 Z"
+            d="M0,40 C360,90 1080,0 1440,40 L1440,80 L0,80 Z"
             fill="#f1f5f9"
           />
         </svg>

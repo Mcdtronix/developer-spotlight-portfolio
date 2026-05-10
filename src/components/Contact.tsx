@@ -68,6 +68,34 @@ export function Contact({
   return (
     <section id="contact" className="relative py-32 overflow-hidden bg-[#0a0a0f]">
       
+      {/* ── Top wave: Projects (#f1f5f9) melts into Contact (#0a0a0f) ── */}
+      <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none overflow-hidden leading-[0]">
+        {/* Back wave — indigo tint, sits behind white */}
+        <svg
+          viewBox="0 0 1440 110"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute top-0 w-full h-[90px] md:h-[120px] contact-wave-back"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,0 L1440,0 L1440,60 C1080,110 360,10 0,60 Z"
+            fill="rgba(99,102,241,0.07)"
+          />
+        </svg>
+        {/* Front wave — white, covers top edge coming from Projects */}
+        <svg
+          viewBox="0 0 1440 90"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute top-0 w-full h-[75px] md:h-[100px] contact-wave-front"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,0 L1440,0 L1440,45 C960,90 480,5 0,50 Z"
+            fill="#f1f5f9"
+          />
+        </svg>
+      </div>
+
       {/* ── Carousel background slides ── */}
       <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden>
         {SLIDES.map((cls, i) => (
@@ -198,6 +226,18 @@ export function Contact({
           </div>
         </div>
       </div>
+
+      <style>{`
+        /* ════════════════════════════════
+           WAVE ANIMATIONS
+        ════════════════════════════════ */
+        .contact-wave-back  { animation: contactWaveSway 10s ease-in-out infinite; }
+        .contact-wave-front { animation: contactWaveSway 7s ease-in-out infinite reverse; }
+        @keyframes contactWaveSway {
+          0%, 100% { transform: translateX(0); }
+          50%       { transform: translateX(-1.5%); }
+        }
+      `}</style>
     </section>
   );
 }

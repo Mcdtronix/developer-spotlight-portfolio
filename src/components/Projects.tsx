@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ExternalLink, Github, Star } from "lucide-react";
+import { ExternalLink, Github, Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface Project {
   title: string;
@@ -46,6 +46,13 @@ export function Projects({
 }: ProjectsProps) {
   const { ref: sectionRef, visible } = useReveal(0.08);
   const [hovered, setHovered] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const PROJECTS_PER_PAGE = 6; // 2 rows of 3 projects
+  const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PROJECTS_PER_PAGE;
+  const endIndex = startIndex + PROJECTS_PER_PAGE;
+  const currentProjects = projects.slice(startIndex, endIndex);
 
   return (
     <section
@@ -74,7 +81,7 @@ export function Projects({
         >
           <path
             d="M0,0 L1440,0 L1440,50 C960,95 480,5 0,55 Z"
-            fill="#0a0a0f"
+            fill="#f1f5f9"
           />
         </svg>
       </div>
@@ -113,22 +120,20 @@ export function Projects({
           </div>
 
           {/* ── Project grid ── */}
-          <div className="grid lg:grid-cols-2 gap-8">
-            {projects.map((project, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {currentProjects.map((project, index) => (
               <div
-                key={index}
-                className={`proj-reveal ${visible ? "proj-revealed" : ""} ${
-                  project.featured ? "lg:col-span-2" : ""
-                }`}
+                key={startIndex + index}
+                className={`proj-reveal ${visible ? "proj-revealed" : ""}`}
                 style={{ transitionDelay: `${120 + index * 100}ms` }}
               >
                 <div
                   className="proj-card"
-                  onMouseEnter={() => setHovered(index)}
+                  onMouseEnter={() => setHovered(startIndex + index)}
                   onMouseLeave={() => setHovered(null)}
                 >
                   {/* ── Animated border ring ── */}
-                  <div className={`proj-card-ring ${hovered === index ? "proj-card-ring-active" : ""}`} />
+                  <div className={`proj-card-ring ${hovered === startIndex + index ? "proj-card-ring-active" : ""}`} />
 
                   {/* ── Image / placeholder ── */}
                   <div className="proj-image-wrap">
@@ -136,7 +141,7 @@ export function Projects({
                       <img
                         src={project.image}
                         alt={project.title}
-                        className={`proj-image ${hovered === index ? "proj-image-zoomed" : ""}`}
+                        className={`proj-image ${hovered === startIndex + index ? "proj-image-zoomed" : ""}`}
                       />
                     ) : (
                       <div className="proj-image-placeholder">
@@ -159,7 +164,7 @@ export function Projects({
                     )}
 
                     {/* Hover action strip */}
-                    <div className={`proj-action-strip ${hovered === index ? "proj-action-strip-visible" : ""}`}>
+                    <div className={`proj-action-strip ${hovered === startIndex + index ? "proj-action-strip-visible" : ""}`}>
                       <a
                         href={project.github}
                         target="_blank"
@@ -186,7 +191,7 @@ export function Projects({
 
                   {/* ── Card body ── */}
                   <div className="proj-body">
-                    <h3 className={`proj-title ${hovered === index ? "proj-title-active" : ""}`}>
+                    <h3 className={`proj-title ${hovered === startIndex + index ? "proj-title-active" : ""}`}>
                       {project.title}
                     </h3>
                     <p className="proj-desc">{project.description}</p>
@@ -198,7 +203,7 @@ export function Projects({
                           key={ti}
                           className="proj-tech-badge"
                           style={{
-                            animationDelay: visible ? `${220 + index * 100 + ti * 45}ms` : "0ms",
+                            animationDelay: visible ? `${220 + (startIndex + index) * 100 + ti * 45}ms` : "0ms",
                           }}
                         >
                           {tech}
@@ -232,6 +237,59 @@ export function Projects({
               </div>
             ))}
           </div>
+
+          {/* ── Pagination Controls ── */}
+          {totalPages > 1 && (
+            <div
+              className={`flex justify-center items-center gap-4 mt-12 proj-reveal ${visible ? "proj-revealed" : ""}`}
+              style={{ transitionDelay: `${120 + currentProjects.length * 100}ms` }}
+            >
+              {/* Previous Button */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300'
+                }`}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-10 h-10 rounded-lg font-medium transition-all duration-200 ${
+                      currentPage === pageNum
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-white text-gray-700 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300'
+                }`}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
 
           {/* ── View all CTA ── */}
           <div
