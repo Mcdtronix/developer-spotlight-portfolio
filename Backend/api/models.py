@@ -99,6 +99,22 @@ class Project(models.Model):
     live = models.URLField()
     featured = models.BooleanField(default=False)
     tech = models.JSONField(default=list)  # List of technologies
+    
+    # ── Ordering Fields ──
+    order = models.PositiveIntegerField(default=0, help_text="Display order (0 = first)")
+    priority = models.PositiveIntegerField(default=0, help_text="Optional internal priority marker")
+    
+    # ── Display Control ──
+    is_active = models.BooleanField(default=True, help_text="Show/hide project on portfolio")
+    display_date = models.DateTimeField(auto_now_add=True, help_text="When project was added")
+    
+    class Meta:
+        ordering = ['order', 'id']
+        indexes = [
+            models.Index(fields=['order']),
+            models.Index(fields=['priority']),
+            models.Index(fields=['featured', 'is_active']),
+        ]
 
 class SkillsSection(models.Model):
     section_title = models.CharField(max_length=200)
@@ -110,3 +126,40 @@ class SkillCategory(models.Model):
     title = models.CharField(max_length=100)
     color = models.CharField(max_length=100)
     skills = models.JSONField(default=list)  # List of skills
+
+class ExperienceSection(models.Model):
+    section_title = models.CharField(max_length=200)
+    section_subtitle = models.CharField(max_length=200)
+    section_description = models.TextField()
+
+class Experience(models.Model):
+    EMPLOYMENT_TYPE_CHOICES = [
+        ("full-time", "Full-time"),
+        ("part-time", "Part-time"),
+        ("contract", "Contract"),
+        ("hybrid-remote", "Hybrid Remote"),
+        ("remote", "Remote"),
+    ]
+    
+    experience_section = models.ForeignKey(ExperienceSection, related_name="experiences", on_delete=models.CASCADE)
+    title = models.CharField(max_length=150, help_text="Job title")
+    company = models.CharField(max_length=150)
+    employment_type = models.CharField(max_length=30, choices=EMPLOYMENT_TYPE_CHOICES)
+    location = models.CharField(max_length=150)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True, help_text="Leave blank if current role")
+    is_current = models.BooleanField(default=False)
+    description = models.TextField(help_text="Main role description")
+    achievements = models.JSONField(default=list, help_text="List of key achievements")
+    skills = models.JSONField(default=list, help_text="List of relevant skills")
+    icon = models.CharField(max_length=50, default="Briefcase", help_text="Lucide icon name")
+    
+    # Display control
+    order = models.PositiveIntegerField(default=0, help_text="Display order (0 = first)")
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        ordering = ['-is_current', '-start_date', 'order']
+        indexes = [
+            models.Index(fields=['is_active', '-start_date']),
+        ]

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigation, NavigationProps } from "@/components/Navigation";
 import { Hero, HeroProps } from "@/components/Hero";
 import { About, AboutProps } from "@/components/About";
+import { Experience, ExperienceProps } from "@/components/Experience";
 import { Skills, SkillsProps } from "@/components/Skills";
 import { Projects, ProjectsProps } from "@/components/Projects";
 import { Contact, ContactProps } from "@/components/Contact";
@@ -12,11 +13,13 @@ import {
   getNavigation,
   getProjects,
   getSkills,
+  getExperience,
 } from "@/lib/api";
 
 const Index = () => {
   const [about, setAbout] = useState<AboutProps | null>(null);
   const [contact, setContact] = useState<ContactProps | null>(null);
+  const [experience, setExperience] = useState<ExperienceProps | null>(null);
   const [hero, setHero] = useState<HeroProps | null>(null);
   const [navigation, setNavigation] = useState<NavigationProps | null>(null);
   const [projects, setProjects] = useState<ProjectsProps | null>(null);
@@ -28,6 +31,7 @@ const Index = () => {
       const [
         aboutData,
         contactData,
+        experienceData,
         heroData,
         navigationData,
         projectsData,
@@ -35,6 +39,7 @@ const Index = () => {
       ] = await Promise.all([
         getAbout(),
         getContact(),
+        getExperience(),
         getHero(),
         getNavigation(),
         getProjects(),
@@ -49,6 +54,11 @@ const Index = () => {
         Array.isArray(contactData)
           ? contactData[0]
           : contactData?.results?.[0] || null
+      );
+      setExperience(
+        Array.isArray(experienceData)
+          ? experienceData[0]
+          : experienceData?.results?.[0] || null
       );
       setHero(
         Array.isArray(heroData) ? heroData[0] : heroData?.results?.[0] || null
@@ -92,7 +102,7 @@ const Index = () => {
     );
 
   // Show a user-friendly error if data is missing
-  if (!about || !contact || !hero || !navigation || !projects || !skills) {
+  if (!about || !contact || !experience || !hero || !navigation || !projects || !skills) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-600">
         Error: Failed to load all portfolio data. Please try refreshing the page
@@ -106,6 +116,7 @@ const Index = () => {
       <Navigation {...navigation} />
       <Hero {...hero} />
       <About {...about} />
+      <Experience {...experience} />
       <Skills {...skills} />
       <Projects {...projects} />
       <Contact {...contact} />

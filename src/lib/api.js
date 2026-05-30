@@ -36,3 +36,7 @@ export async function getProjects() {
 export async function getSkills() {
   return fetchAPI("skills");
 }
+
+export async function getExperience() {
+  return fetchAPI("experience");
+}

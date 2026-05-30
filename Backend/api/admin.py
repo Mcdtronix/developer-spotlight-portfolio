@@ -5,7 +5,8 @@ from .models import (
     HeroSection, HeroAction,
     Navigation, NavItem,
     ProjectsSection, Project,
-    SkillsSection, SkillCategory
+    SkillsSection, SkillCategory,
+    ExperienceSection, Experience
 )
 
 class AboutHighlightInline(admin.TabularInline):
@@ -51,11 +52,25 @@ class NavigationAdmin(admin.ModelAdmin):
 class ProjectInline(admin.TabularInline):
     model = Project
     extra = 1
+    fields = (
+        'order', 'title', 'description', 'image', 'tech',
+        'github', 'live', 'featured', 'is_active', 'priority'
+    )
+    ordering = ('order', 'id')
 
 @admin.register(ProjectsSection)
 class ProjectsSectionAdmin(admin.ModelAdmin):
     inlines = [ProjectInline]
     list_display = ('section_title', 'section_subtitle')
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('order', 'title', 'featured', 'is_active', 'priority', 'display_date')
+    list_display_links = ['title']
+    list_editable = ('order', 'featured', 'is_active', 'priority')
+    list_filter = ('is_active', 'featured')
+    search_fields = ('title', 'description')
+    ordering = ('order', 'id')
 
 class SkillCategoryInline(admin.TabularInline):
     model = SkillCategory
@@ -65,3 +80,19 @@ class SkillCategoryInline(admin.TabularInline):
 class SkillsSectionAdmin(admin.ModelAdmin):
     inlines = [SkillCategoryInline]
     list_display = ('section_title', 'section_subtitle')
+
+class ExperienceInline(admin.TabularInline):
+    model = Experience
+    extra = 1
+
+@admin.register(ExperienceSection)
+class ExperienceSectionAdmin(admin.ModelAdmin):
+    inlines = [ExperienceInline]
+    list_display = ('section_title', 'section_subtitle')
+
+@admin.register(Experience)
+class ExperienceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'company', 'location', 'is_current', 'start_date', 'order', 'is_active')
+    list_filter = ('is_current', 'is_active', 'employment_type', 'start_date')
+    search_fields = ('title', 'company', 'location')
+    ordering = ('-is_current', '-start_date', 'order')

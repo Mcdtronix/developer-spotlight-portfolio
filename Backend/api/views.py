@@ -1,12 +1,15 @@
 from django.shortcuts import render
+from django.db.models import Prefetch
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from .models import (
-    AboutSection, ContactSection, HeroSection, Navigation, ProjectsSection, SkillsSection
+    AboutSection, ContactSection, HeroSection, Navigation, ProjectsSection, SkillsSection,
+    ExperienceSection, Project
 )
 from .serializers import (
     AboutSectionSerializer, ContactSectionSerializer, HeroSectionSerializer,
-    NavigationSerializer, ProjectsSectionSerializer, SkillsSectionSerializer
+    NavigationSerializer, ProjectsSectionSerializer, SkillsSectionSerializer,
+    ExperienceSectionSerializer
 )
 
 # Create your views here.
@@ -37,7 +40,12 @@ class NavigationViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProjectsSectionViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for viewing Projects section content."""
-    queryset = ProjectsSection.objects.all()
+    queryset = ProjectsSection.objects.prefetch_related(
+        Prefetch(
+            "projects",
+            queryset=Project.objects.filter(is_active=True).order_by("order", "id"),
+        )
+    )
     serializer_class = ProjectsSectionSerializer
     permission_classes = [AllowAny]
 
@@ -45,4 +53,10 @@ class SkillsSectionViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for viewing Skills section content."""
     queryset = SkillsSection.objects.all()
     serializer_class = SkillsSectionSerializer
+    permission_classes = [AllowAny]
+
+class ExperienceSectionViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint for viewing Experience section content."""
+    queryset = ExperienceSection.objects.all()
+    serializer_class = ExperienceSectionSerializer
     permission_classes = [AllowAny]

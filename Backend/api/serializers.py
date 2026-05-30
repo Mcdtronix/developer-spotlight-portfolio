@@ -5,7 +5,8 @@ from .models import (
     HeroSection, HeroAction,
     Navigation, NavItem,
     ProjectsSection, Project,
-    SkillsSection, SkillCategory
+    SkillsSection, SkillCategory,
+    ExperienceSection, Experience
 )
 
 class AboutHighlightSerializer(serializers.ModelSerializer):
@@ -71,7 +72,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = [
-            'title', 'description', 'image', 'tech', 'github', 'live', 'featured'
+            'title', 'description', 'image', 'tech', 'github', 'live', 'featured',
+            'order', 'priority', 'is_active', 'display_date'
         ]
 
 class ProjectsSectionSerializer(serializers.ModelSerializer):
@@ -94,4 +96,21 @@ class SkillsSectionSerializer(serializers.ModelSerializer):
         model = SkillsSection
         fields = [
             'section_title', 'section_subtitle', 'section_description', 'categories'
+        ]
+
+class ExperienceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Experience
+        fields = [
+            'title', 'company', 'employment_type', 'location',
+            'start_date', 'end_date', 'is_current', 'description',
+            'achievements', 'skills', 'icon', 'order', 'is_active'
+        ]
+
+class ExperienceSectionSerializer(serializers.ModelSerializer):
+    experiences = ExperienceSerializer(many=True, read_only=True)
+    class Meta:
+        model = ExperienceSection
+        fields = [
+            'section_title', 'section_subtitle', 'section_description', 'experiences'
         ]
