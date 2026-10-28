@@ -23,14 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = 'django-insecure-o@x*aa0#b0_mt)0^p%%@x-onx1($5*$+yf(kfn@*a#5s7^n=*8'
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-o@x*aa0#b0_mt)0^p%%@x-onx1($5*$+yf(kfn@*a#5s7^n=*8')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG =config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-#ALLOWED_HOSTS = ['194.163.143.0']
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,194.163.143.0', cast=Csv())
 
 
 # Application definition
@@ -156,6 +154,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "https://mcdtronix.co.zw",
     "https://www.mcdtronix.co.zw",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://localhost:8082",
+    "http://127.0.0.1:8082",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 # Django REST Framework settings
