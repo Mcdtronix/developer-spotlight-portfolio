@@ -161,7 +161,7 @@ export function Skills({
           <div
             key={i}
             className={cn(
-              "absolute inset-0 transition-opacity duration-[1200ms] ease-in-out before:absolute before:inset-0",
+              "absolute inset-0 transition-opacity [transition-duration:1200ms] ease-in-out before:absolute before:inset-0",
               cls,
               i === current ? "opacity-100" : "opacity-0"
             )}
