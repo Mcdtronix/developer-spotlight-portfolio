@@ -1,0 +1,3 @@
+# /etc/sudoers.d/deploy-portfolio — the deploy user may restart the portfolio
+# service and nothing else. Validated with `visudo -cf` before installation.
+deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart portfolio, /usr/bin/systemctl status portfolio, /usr/bin/systemctl is-active portfolio

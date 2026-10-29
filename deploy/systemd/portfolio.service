@@ -1,0 +1,46 @@
+[Unit]
+Description=Portfolio API (Django + Gunicorn) for mcdtronix.co.zw
+After=network-online.target postgresql.service
+Wants=network-online.target postgresql.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+User=deploy
+Group=deploy
+
+# `current` is re-resolved on every (re)start, so a restart picks up the new release.
+WorkingDirectory=/srv/apps/portfolio/current/backend
+ExecStart=/srv/apps/portfolio/current/backend/.venv/bin/gunicorn Core.wsgi:application \
+    --bind 127.0.0.1:8001 \
+    --workers 3 \
+    --timeout 30 \
+    --graceful-timeout 20 \
+    --max-requests 1000 --max-requests-jitter 100 \
+    --forwarded-allow-ips 127.0.0.1 \
+    --access-logfile - \
+    --error-logfile -
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+KillMode=mixed
+
+# Uploaded files must be readable by Nginx (www-data is in the deploy group).
+UMask=0027
+
+# Sandboxing — the app can only write to its media directory.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/apps/portfolio/shared/media
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
