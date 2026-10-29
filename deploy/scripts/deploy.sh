@@ -66,6 +66,14 @@ fail() {
   err "DEPLOY FAILED (stage: $STAGE): $*"
   stop_preflight
 
+  if [[ "$STAGE" != "prepare" && -z "$PREV_RELEASE" ]]; then
+    # First deployment: nothing to roll back to. Keep the schema and release in place
+    # so the next run (after fixing the cause) starts from here.
+    warn "First deployment: no previous release — leaving $RELEASE_ID in place for diagnosis."
+    err "Log: $DEPLOY_LOG"
+    exit 1
+  fi
+
   if [[ "$STAGE" != "prepare" ]]; then
     step "Automatic rollback"
 
