@@ -1,4 +1,7 @@
+from django.db import connection
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.cache import never_cache
 from django.db.models import Prefetch
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
@@ -60,3 +63,15 @@ class ExperienceSectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ExperienceSection.objects.all()
     serializer_class = ExperienceSectionSerializer
     permission_classes = [AllowAny]
+
+
+@never_cache
+def health(request):
+    """Liveness + database check used by the deploy pipeline and monitoring."""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+    except Exception:
+        return JsonResponse({"status": "error", "database": "unavailable"}, status=503)
+    return JsonResponse({"status": "ok", "database": "ok"})

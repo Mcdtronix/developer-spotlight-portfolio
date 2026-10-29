@@ -28,7 +28,9 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-o@x*aa0#b0_mt)0^p%%@x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,194.163.143.0', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
 
 
 # Application definition
@@ -80,41 +82,33 @@ WSGI_APPLICATION = 'Core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+#
+# Selected by DB_ENGINE in the environment / .env file:
+#   sqlite3    -> local development (default)
+#   postgresql -> production (VPS) and CI
 
+DB_ENGINE = config('DB_ENGINE', default='sqlite3')
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "Mcdonald$default",
-#         "USER": "Mcdonald",
-#         "PASSWORD": "aqi16@khayz",
-#         "HOST": "Mcdonald.mysql.pythonanywhere-services.com",
-#         "PORT": "3306",
-#         "OPTIONS": {"charset": "utf8mb4"},
-#     }
-# }
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='portfolio_db'),
-        'USER': config('DB_USER', default='portfolio_main'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+if DB_ENGINE == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME', default='portfolio_db'),
+            'USER': config('DB_USER', default='portfolio_main'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='5432'),
+            'CONN_MAX_AGE': config('DB_CONN_MAX_AGE', default=60, cast=int),
+            'CONN_HEALTH_CHECKS': True,
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -148,8 +142,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-# CORS settings (for development only; restrict in production!)
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS: open in development, restricted to the list below in production.
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=DEBUG, cast=bool)
 
 CORS_ALLOWED_ORIGINS = [
     "https://mcdtronix.co.zw",
@@ -185,8 +179,28 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# SECURITY WARNING: Set CORS_ALLOW_ALL_ORIGINS = False and configure allowed origins in production!
 
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Production hardening (active when DEBUG=False).
+# TLS is terminated by Nginx, which sets X-Forwarded-Proto.
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+    X_FRAME_OPTIONS = 'DENY'
+    # Nginx handles the HTTP->HTTPS redirect and HSTS header.
+    SECURE_SSL_REDIRECT = False
+
+# Log to stdout/stderr so Gunicorn output lands in journald.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {'console': {'class': 'logging.StreamHandler'}},
+    'root': {'handlers': ['console'], 'level': config('LOG_LEVEL', default='INFO')},
+}
